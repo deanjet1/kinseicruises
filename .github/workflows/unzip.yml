@@ -1,0 +1,105 @@
+name: Unzip Project Files
+
+
+
+on:
+
+  push:
+  
+    paths:
+    
+      - 'kinsei-cruises-project.zip'
+      
+  workflow_dispatch:
+  
+
+
+jobs:
+
+  unzip:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      - name: Checkout Repository
+      
+        uses: actions/checkout@v4
+        
+
+
+      - name: Extract ZIP File
+      
+        run: |
+        
+          # Create a temp directory
+          
+          mkdir temp_unzip
+          
+          # Unzip files
+          
+          unzip -o kinsei-cruises-project.zip -d temp_unzip
+          
+          # Remove the zip file from the commit
+          
+          rm kinsei-cruises-project.zip
+          
+          # Move files to root
+          
+          cp -r temp_unzip/* . || true
+          
+          cp -r temp_unzip/.[a-zA-Z0-9]* . || true
+          
+          # Clean up temp directory
+          
+          rm -rf temp_unzip
+          
+
+          
+      - name: Commit Unzipped Files
+      
+        run: |
+        
+          git config --global user.name 'github-actions[bot]'
+          
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          git add -A
+          
+          # Commit only if there are changes
+          
+          git diff --quiet && git diff --staged --quiet || git commit -m "Unzip latest project files"
+          
+          git push
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
